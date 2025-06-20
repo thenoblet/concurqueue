@@ -1,0 +1,67 @@
+package gtp.worker;
+
+import gtp.core.TaskStateTracker;
+import gtp.model.Task;
+import gtp.model.TaskStatus;
+
+import java.util.Random;
+import java.util.concurrent.BlockingQueue;
+
+public class TaskWorker implements Runnable {
+    private final BlockingQueue<Task> taskQueue;
+    private final TaskStateTracker stateTracker;
+    private final Random random = new Random();
+    private final String workerId;
+    private final int maxRetries;
+
+    public TaskWorker(String workerId, BlockingQueue<Task> taskQueue,
+                      TaskStateTracker stateTracker, int maxRetries) {
+        this.workerId = workerId;
+        this.taskQueue = taskQueue;
+        this.stateTracker = stateTracker;
+        this.maxRetries = maxRetries;
+    }
+
+    @Override
+    public void run() {
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                Task task = taskQueue.take();
+                processTask(task);
+            }
+        } catch (InterruptedException e) {
+            System.out.printf("[%s] Worker interrupted, shutting down%n", workerId);
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void processTask(Task task) throws InterruptedException {
+        stateTracker.updateTaskStatus(task.getId(), TaskStatus.PROCESSING);
+        System.out.printf("[%s] Processing %s%n", workerId, task);
+
+        try {
+            // Simulate processing time (0.5-2.5 seconds)
+            Thread.sleep(random.nextInt(10000) + 500);
+
+            // Simulate occasional failures (10% chance)
+            if (random.nextDouble() < 0.1 && task.getRetryCount() < maxRetries) {
+                throw new RuntimeException("Simulated processing failure");
+            }
+
+            stateTracker.updateTaskStatus(task.getId(), TaskStatus.COMPLETED);
+            System.out.printf("[%s] Completed %s%n", workerId, task);
+        } catch (Exception e) {
+            System.out.printf("[%s] Failed to process %s: %s%n", workerId, task, e.getMessage());
+            stateTracker.updateTaskStatus(task.getId(), TaskStatus.FAILED);
+
+            if (task.getRetryCount() < maxRetries) {
+                task.incrementRetryCount();
+                taskQueue.put(task);
+                System.out.printf("[%s] Re-queued %s for retry (attempt %d/%d)%n",
+                        workerId, task, task.getRetryCount(), maxRetries);
+            } else {
+                System.out.printf("[%s] Max retries reached for %s%n", workerId, task);
+            }
+        }
+    }
+}
