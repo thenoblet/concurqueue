@@ -57,8 +57,8 @@ A high-performance job dispatcher system that handles multiple producer clients 
 ## How to Run
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/ConcurQueue.git
-   cd ConcurQueue
+   git clone https://github.com/thenoblet/concurqueue.git
+   cd concurqueue
    ```
 
 2. Compile and run:
@@ -93,8 +93,6 @@ Synchronization points:
 ---
 
 ## Activity Diagram
-
-![Activity Diagram](docs/ActivityDiagram.png)
 
 ### Activity Diagram Description:
 ```mermaid
@@ -142,7 +140,7 @@ stateDiagram-v2
     TerminateThreads --> [*]
 ```
 
-Key synchronization points shown in diagram:
+Key synchronisation points shown in diagram:
 1. Queue access (both producers and workers)
 2. State updates (shared ConcurrentHashMap)
 3. Counter increments (race condition example)
@@ -175,9 +173,9 @@ Monitor thread reports both values - you'll see:
 ### Monitoring Output Example
 ```
 === System Status ===
-Queue size: 12
-Tasks: 45 submitted, 4 processing, 89 completed, 3 failed
-Thread pool: java.util.concurrent.ThreadPoolExecutor@1a2b3c4d
-Counters: unsafe=94, safe=141
-===================
+Queue size: 11
+Tasks: 3163 submitted, 5 processing, 855 completed, 8 failed
+Counters: unsafe=83763 (race condition visible) / safe=95344 (correct)
+Thread pool: java.util.concurrent.ThreadPoolExecutor@9807454[Shutting down, pool size = 5, active threads = 5, queued tasks = 0, completed tasks = 0]
+=====================
 ```
