@@ -3,6 +3,7 @@ package gtp.core;
 import gtp.config.AppConfig;
 import gtp.model.Task;
 import gtp.producer.TaskProducer;
+import gtp.util.JsonExporter;
 import gtp.worker.TaskWorker;
 
 import java.util.concurrent.BlockingQueue;
@@ -17,6 +18,7 @@ public class TaskDispatcher {
     private final ExecutorService producerExecutor;
     private final ExecutorService workerExecutor;
     private final SystemMonitor monitor;
+    private final JsonExporter jsonExporter;
     private final int producerCount;
     private final int workerCount;
     private final int maxRetries;
@@ -29,6 +31,7 @@ public class TaskDispatcher {
         this.stateTracker = new TaskStateTracker();
         this.producerExecutor = Executors.newFixedThreadPool(producerCount);
         this.workerExecutor = Executors.newFixedThreadPool(workerCount);
+        this.jsonExporter = new JsonExporter(stateTracker, config);
         this.monitor = new SystemMonitor(taskQueue, workerExecutor, stateTracker);
     }
 
@@ -47,6 +50,7 @@ public class TaskDispatcher {
 
         // Start monitor in a separate thread
         new Thread(monitor).start();
+        jsonExporter.start();
     }
 
     public void shutdown() {
@@ -73,6 +77,7 @@ public class TaskDispatcher {
         }
 
         monitor.stop();
+        jsonExporter.stop();
     }
 
     public BlockingQueue<Task> getTaskQueue() {

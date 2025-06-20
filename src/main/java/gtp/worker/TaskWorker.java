@@ -6,6 +6,7 @@ import gtp.model.TaskStatus;
 
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TaskWorker implements Runnable {
     private final BlockingQueue<Task> taskQueue;
@@ -13,6 +14,9 @@ public class TaskWorker implements Runnable {
     private final Random random = new Random();
     private final String workerId;
     private final int maxRetries;
+
+    public static int unsafeCounter = 0;
+    public static AtomicInteger safeCounter = new AtomicInteger(0);
 
     public TaskWorker(String workerId, BlockingQueue<Task> taskQueue,
                       TaskStateTracker stateTracker, int maxRetries) {
@@ -37,6 +41,11 @@ public class TaskWorker implements Runnable {
 
     private void processTask(Task task) throws InterruptedException {
         stateTracker.updateTaskStatus(task.getId(), TaskStatus.PROCESSING);
+
+        unsafeCounter++;
+        safeCounter.incrementAndGet();
+
+
         System.out.printf("[%s] Processing %s%n", workerId, task);
 
         try {

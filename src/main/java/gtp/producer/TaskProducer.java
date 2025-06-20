@@ -43,7 +43,7 @@ public class TaskProducer implements Runnable {
                             producerId, task, taskQueue.size());
                 }
 
-                Thread.sleep(random.nextInt(10000) + 10000); // 1-4 sec delay
+                Thread.sleep(random.nextInt(1000) + 1000); // 1-4 sec delay
             }
         } catch (InterruptedException e) {
             System.out.printf("[%s] Producer interrupted, shutting down%n", producerId);
