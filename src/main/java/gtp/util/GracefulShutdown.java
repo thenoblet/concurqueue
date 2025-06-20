@@ -17,7 +17,6 @@ public class GracefulShutdown implements Runnable {
         System.out.println("\nShutdown initiated, draining queue...");
         BlockingQueue<Task> queue = dispatcher.getTaskQueue();
 
-        // Process remaining tasks
         while (!queue.isEmpty()) {
             try {
                 Task task = queue.poll(1, java.util.concurrent.TimeUnit.SECONDS);

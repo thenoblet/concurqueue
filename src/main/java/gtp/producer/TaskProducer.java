@@ -52,6 +52,11 @@ public class TaskProducer implements Runnable {
     }
 
     private Task generateTask() {
+        // 5% chance to generate deadlock demo task
+        if (random.nextInt(100) < 5) {
+            return new Task("DEADLOCK-DEMO", 1, "deadlock");
+        }
+
         int priority = random.nextInt(5) + 1; // 1-5 priority
         String payload = "Payload-" + taskCounter.incrementAndGet();
         return new Task("Task-" + taskCounter.get(), priority, payload);

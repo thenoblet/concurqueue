@@ -47,9 +47,17 @@ public class SystemMonitor implements Runnable {
                 System.out.printf("Tasks: %d submitted, %d processing, %d completed, %d failed%n",
                         submitted, processing, completed, failed);
 
-                System.out.printf("Counters: unsafe=%d (race condition visible) / safe=%d (correct)%n",
-                        TaskWorker.unsafeCounter,
-                        TaskWorker.safeCounter.get());
+                System.out.println("\n--- Synchronization Demo ---");
+                System.out.printf("Counters: unsafe=%,d | safe=%,d (lost updates: %,d)%n",
+                        TaskWorker.getUnsafeCounter(),
+                        TaskWorker.getSafeCounter(),
+                        TaskWorker.getSafeCounter() - TaskWorker.getUnsafeCounter());
+
+                if (TaskWorker.getUnsafeCounter() == TaskWorker.getSafeCounter()) {
+                    System.out.println("WARNING: No race conditions detected - try:");
+                    System.out.println("1. Increase worker threads (> CPU cores)");
+                    System.out.println("2. Add more contention in demonstrateRaceCondition()");
+                }
 
                 System.out.println("Thread pool: " + executorService.toString());
                 System.out.println("=====================\n");

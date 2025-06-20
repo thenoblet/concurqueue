@@ -36,25 +36,21 @@ public class TaskDispatcher {
     }
 
     public void start() {
-        // Start producers
         for (int i = 0; i < producerCount; i++) {
             producerExecutor.execute(
                     new TaskProducer("Producer-" + (i + 1), taskQueue, stateTracker));
         }
 
-        // Start workers
         for (int i = 0; i < workerCount; i++) {
             workerExecutor.execute(
                     new TaskWorker("Worker-" + (i + 1), taskQueue, stateTracker, maxRetries));
         }
 
-        // Start monitor in a separate thread
         new Thread(monitor).start();
         jsonExporter.start();
     }
 
     public void shutdown() {
-        // Shutdown producers first
         producerExecutor.shutdown();
         try {
             if (!producerExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
@@ -65,7 +61,6 @@ public class TaskDispatcher {
             Thread.currentThread().interrupt();
         }
 
-        // Shutdown workers
         workerExecutor.shutdown();
         try {
             if (!workerExecutor.awaitTermination(10, TimeUnit.SECONDS)) {
