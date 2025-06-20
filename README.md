@@ -166,9 +166,11 @@ Monitor thread reports both values - you'll see:
 ### Monitoring Output Example
 ```
 === System Status ===
-Queue size: 11
-Tasks: 3163 submitted, 5 processing, 855 completed, 8 failed
-Counters: unsafe=83763 (race condition visible) / safe=95344 (correct)
-Thread pool: java.util.concurrent.ThreadPoolExecutor@9807454[Shutting down, pool size = 5, active threads = 5, queued tasks = 0, completed tasks = 0]
+Queue size: 17
+Tasks: 482 submitted, 10 processing, 144 completed, 2 failed
+
+--- Synchronization Demo ---
+Counters: unsafe=181,110 | safe=181,181 (lost updates: 71)
+Thread pool: java.util.concurrent.ThreadPoolExecutor@9807454[Shutting down, pool size = 10, active threads = 10, queued tasks = 0, completed tasks = 0]
 =====================
 ```
