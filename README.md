@@ -1,4 +1,35 @@
-Here are the deliverables for the ConcurQueue project:
+# ConcurQueue - Multithreaded Job Processing Platform
+
+A high-performance job dispatcher system that handles multiple producer clients submitting jobs and distributes them to worker threads for concurrent processing.
+
+## Features
+- Priority-based task scheduling
+- Thread-safe task queue (PriorityBlockingQueue)
+- Task state tracking (SUBMITTED, PROCESSING, COMPLETED, FAILED)
+- Automatic retry mechanism (up to 3 times)
+- System monitoring thread
+- Graceful shutdown handling
+- Race condition demonstration and solution
+
+## How to Run
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/thenoblet/concurqueue.git
+   cd concurqueue
+   ```
+
+2. Compile and run:
+   ```bash
+   javac src/*.java -d bin/
+   java -cp bin/ ConcurQueue
+   ```
+
+3. The system will start automatically:
+   - 3 producer threads generating tasks
+   - 4 worker threads processing tasks
+   - 1 monitor thread reporting system status
+
+4. Press Ctrl+C to initiate graceful shutdown
 
 ---
 
@@ -37,42 +68,6 @@ concurqueue/
 ```
 
 ---
-
-## README.md
-
-```markdown
-# ConcurQueue - Multithreaded Job Processing Platform
-
-A high-performance job dispatcher system that handles multiple producer clients submitting jobs and distributes them to worker threads for concurrent processing.
-
-## Features
-- Priority-based task scheduling
-- Thread-safe task queue (PriorityBlockingQueue)
-- Task state tracking (SUBMITTED, PROCESSING, COMPLETED, FAILED)
-- Automatic retry mechanism (up to 3 times)
-- System monitoring thread
-- Graceful shutdown handling
-- Race condition demonstration and solution
-
-## How to Run
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/thenoblet/concurqueue.git
-   cd concurqueue
-   ```
-
-2. Compile and run:
-   ```bash
-   javac src/*.java -d bin/
-   java -cp bin/ ConcurQueue
-   ```
-
-3. The system will start automatically:
-    - 3 producer threads generating tasks
-    - 4 worker threads processing tasks
-    - 1 monitor thread reporting system status
-
-4. Press Ctrl+C to initiate graceful shutdown
 
 ## Design Explanation
 The system follows the producer-consumer pattern with these key components:
@@ -153,8 +148,6 @@ The diagram illustrates:
 - Monitoring and shutdown flows
 
 ---
-
-## Additional Documentation
 
 ### Race Condition Demonstration
 The system includes two counters:
