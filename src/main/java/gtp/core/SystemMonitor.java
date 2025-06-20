@@ -2,6 +2,7 @@ package gtp.core;
 
 import gtp.model.Task;
 import gtp.model.TaskStatus;
+import gtp.worker.*;
 
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -45,6 +46,10 @@ public class SystemMonitor implements Runnable {
 
                 System.out.printf("Tasks: %d submitted, %d processing, %d completed, %d failed%n",
                         submitted, processing, completed, failed);
+
+                System.out.printf("Counters: unsafe=%d (race condition visible) / safe=%d (correct)%n",
+                        TaskWorker.unsafeCounter,
+                        TaskWorker.safeCounter.get());
 
                 System.out.println("Thread pool: " + executorService.toString());
                 System.out.println("=====================\n");

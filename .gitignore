@@ -60,3 +60,6 @@ replay_pid*
 
 ### Mac OS ###
 .DS_Store
+
+# Export files
+/exports/

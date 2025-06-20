@@ -34,4 +34,8 @@ public class AppConfig {
     public int getMonitorIntervalSeconds() {
         return Integer.parseInt(props.getProperty("monitor.interval.seconds", "5"));
     }
+
+    public int getJsonExportInterval() {
+        return Integer.parseInt(props.getProperty("json.exporter.interval", "5"));
+    }
 }
