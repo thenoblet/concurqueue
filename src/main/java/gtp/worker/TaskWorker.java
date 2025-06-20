@@ -15,8 +15,14 @@ public class TaskWorker implements Runnable {
     private final String workerId;
     private final int maxRetries;
 
-    public static int unsafeCounter = 0;
-    public static AtomicInteger safeCounter = new AtomicInteger(0);
+    // Race condition demonstration
+    private static int unsafeCounter = 0;
+    private static final AtomicInteger safeCounter = new AtomicInteger(0);
+    private static final Object counterLock = new Object();
+
+    // Deadlock demonstration
+    private static final Object lockA = new Object();
+    private static final Object lockB = new Object();
 
     public TaskWorker(String workerId, BlockingQueue<Task> taskQueue,
                       TaskStateTracker stateTracker, int maxRetries) {
@@ -40,6 +46,9 @@ public class TaskWorker implements Runnable {
     }
 
     private void processTask(Task task) throws InterruptedException {
+        demonstrateRaceCondition();
+        demonstrateDeadlockIfNeeded(task);
+
         stateTracker.updateTaskStatus(task.getId(), TaskStatus.PROCESSING);
 
         unsafeCounter++;
@@ -72,5 +81,56 @@ public class TaskWorker implements Runnable {
                 System.out.printf("[%s] Max retries reached for %s%n", workerId, task);
             }
         }
+    }
+
+    private void demonstrateRaceCondition() {
+        // Force more contention by incrementing multiple times
+        for (int i = 0; i < 1000; i++) {
+            // UNSAFE: Race condition
+            unsafeCounter++;
+
+            // SAFE: Atomic increment (fix)
+            safeCounter.incrementAndGet();
+        }
+    }
+
+    // Deadlock demo (optional)
+    private void demonstrateDeadlockIfNeeded(Task task) {
+        if (task.getName().contains("DEADLOCK")) {
+            System.out.println("\n=== Initiating Deadlock Scenario ===");
+
+            Thread thread1 = new Thread(() -> {
+                synchronized (lockA) {
+                    System.out.println("Thread1 acquired lockA");
+                    try { Thread.sleep(100); } catch (InterruptedException e) {}
+
+                    synchronized (lockB) {  // Will deadlock
+                        System.out.println("Thread1 acquired lockB (never reached)");
+                    }
+                }
+            });
+
+            Thread thread2 = new Thread(() -> {
+                synchronized (lockB) {
+                    System.out.println("Thread2 acquired lockB");
+                    try { Thread.sleep(100); } catch (InterruptedException e) {}
+
+                    synchronized (lockA) {  // Deadlock occurs here
+                        System.out.println("Thread2 acquired lockA (never reached)");
+                    }
+                }
+            });
+
+            thread1.start();
+            thread2.start();
+        }
+    }
+
+    public static int getUnsafeCounter() {
+        return unsafeCounter;
+    }
+
+    public static int getSafeCounter() {
+        return safeCounter.get();
     }
 }
