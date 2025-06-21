@@ -3,6 +3,20 @@ package gtp.model;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Represents a unit of work in the task processing system.
+ * <p>
+ * Tasks are comparable based on their priority (higher priority comes first)
+ * and contain all necessary information for execution. Each task is assigned:
+ * </p>
+ * <ul>
+ *   <li>A unique UUID identifier</li>
+ *   <li>A creation timestamp</li>
+ *   <li>A retry counter for failure handling</li>
+ * </ul>
+ *
+ * <p>Natural ordering is determined by priority (descending).</p>
+ */
 public class Task implements Comparable<Task> {
     private final UUID id;
     private final String name;
@@ -36,6 +50,12 @@ public class Task implements Comparable<Task> {
         return Integer.compare(other.priority, this.priority);
     }
 
+    /**
+     * Returns a string representation of the task.
+     * Excludes payload for security/brevity.
+     *
+     * @return formatted task description
+     */
     @Override
     public String toString() {
         return "Task {" +
